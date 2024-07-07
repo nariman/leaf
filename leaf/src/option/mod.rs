@@ -1,20 +1,30 @@
 use std::env;
+use std::fmt::Display;
 use std::net::SocketAddr;
 use std::str::FromStr;
 
 use lazy_static::lazy_static;
+use tracing::debug;
 
 // Gets an environment variable by a key and parses as type `T` or returns
 // the provided default value.
 fn get_env_var_or<T>(key: &str, default: T) -> T
 where
     T: FromStr,
+    T: Display
 {
+    debug!("getting env var {}", key);
+
     if let Ok(v) = env::var(key) {
+        debug!("got env var {} = {}", key, v);
+
         if let Ok(v) = v.parse::<T>() {
+            debug!("parsed env var {} = {}", key, v);
             return v;
         }
     }
+    debug!("using env var default {} = {}", key, default);
+
     default
 }
 
@@ -98,7 +108,7 @@ lazy_static! {
     };
 
     pub static ref DOMAIN_SNIFFING: bool = {
-        get_env_var_or("DOMAIN_SNIFFING", false)
+        get_env_var_or("DOMAIN_SNIFFING", true)
     };
 
     /// Uplink timeout after downlink EOF.

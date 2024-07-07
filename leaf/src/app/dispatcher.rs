@@ -82,7 +82,7 @@ impl Dispatcher {
     where
         T: 'static + AsyncRead + AsyncWrite + Unpin + Send + Sync,
     {
-        debug!("dispatching {}:{}", &sess.network, &sess.destination);
+        debug!("dispatching stream to {}:{}", &sess.network, &sess.destination);
         let mut lhs: Box<dyn ProxyStream> = if *option::DOMAIN_SNIFFING
             && !sess.destination.is_domain()
             && sess.destination.port() == 443
@@ -255,7 +255,7 @@ impl Dispatcher {
         &self,
         mut sess: Session,
     ) -> io::Result<Box<dyn OutboundDatagram>> {
-        debug!("dispatching {}:{}", &sess.network, &sess.destination);
+        debug!("dispatching datagram to {}:{}", &sess.network, &sess.destination);
         let outbound = {
             let router = self.router.read().await;
             match router.pick_route(&sess).await {
